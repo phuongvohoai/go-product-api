@@ -1,0 +1,38 @@
+@host = http://localhost:8080
+
+### Get a user by id
+GET {{host}}/api/v1/users/1
+
+### Get all users
+GET {{host}}/api/v1/users
+
+### Create a new user
+POST {{host}}/api/v1/users
+content-type: application/json
+
+{
+  "username": "alice",
+  "password": "Password123"
+}
+
+### Update a user
+PUT {{host}}/api/v1/users/2
+content-type: application/json
+
+{
+  "username": "alice1",
+  "password": "Password123",
+  "email": "alice@work.com"
+}
+
+### Delete a user
+DELETE {{host}}/api/v1/users/2
+
+### Login
+POST {{host}}/api/v1/auth/login
+content-type: application/json
+
+{
+  "username": "alice1",
+  "password": "Password123"
+}
