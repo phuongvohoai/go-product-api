@@ -2,6 +2,7 @@ package database
 
 import (
 	"log"
+	"os"
 
 	"phuong/go-product-api/models"
 
@@ -12,7 +13,7 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	dsn := "sqlserver://sa:Password1@@localhost:1433?database=ProductApi&connection+timeout=30"
+	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 
 	if err != nil {

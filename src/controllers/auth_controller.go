@@ -19,6 +19,12 @@ func NewAuthController(userService services.UserService) *AuthController {
 	return &AuthController{userService}
 }
 
+// Login godoc
+//
+//	@Summary		Login
+//	@Tags			auth
+//	@Param			body body LoginRequest true "Login request"
+//	@Router			/api/v1/auth/login [post]
 func (ctr *AuthController) Login(c *gin.Context) {
 	var loginRequest LoginRequest
 

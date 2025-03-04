@@ -1,0 +1,31 @@
+definitions:
+  controllers.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+info:
+  contact: {}
+  description: API for managing products
+  title: Product API
+  version: "1.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      parameters:
+      - description: Login request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginRequest'
+      responses: {}
+      summary: Login
+      tags:
+      - auth
+swagger: "2.0"
