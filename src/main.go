@@ -2,8 +2,10 @@ package main
 
 import (
 	"phuong/go-product-api/database"
+	"phuong/go-product-api/middleware"
 	"phuong/go-product-api/routes"
 
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
@@ -14,7 +16,11 @@ func main() {
 	godotenv.Load()
 	database.Connect()
 
-	router := routes.RegisterRoutes()
+	r := gin.Default()
 
-	router.Run(":8080")
+	r.Use(middleware.PerformanceLogMiddleware())
+
+	routes.RegisterRoutes(r)
+
+	r.Run(":8080")
 }

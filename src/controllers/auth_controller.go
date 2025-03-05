@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"phuong/go-product-api/models"
 	"phuong/go-product-api/services"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,12 @@ type AuthController struct {
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Token    string `json:"token"`
 }
 
 func NewAuthController(userService services.UserService) *AuthController {
@@ -29,15 +36,25 @@ func (ctr *AuthController) Login(c *gin.Context) {
 	var loginRequest LoginRequest
 
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid request"})
+		c.JSON(400, models.Response.BadRequest(err))
 		return
 	}
 
 	user, err := ctr.userService.VerifyUser(c, loginRequest.Username, loginRequest.Password)
 	if err != nil {
-		c.JSON(404, gin.H{"error": "Invalid username or password"})
+		c.JSON(404, models.Response.NotFound(err))
 		return
 	}
 
-	c.JSON(200, user)
+	token, err := services.GenerateToken(user.Username, user.Email)
+	if err != nil {
+		c.JSON(400, models.Response.BadRequest(err))
+		return
+	}
+
+	c.JSON(200, models.Response.Success(&LoginResponse{
+		Username: user.Username,
+		Email:    user.Email,
+		Token:    token,
+	}))
 }
