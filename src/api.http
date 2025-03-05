@@ -1,6 +1,15 @@
 @host = http://localhost:8080
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsaWNlMSIsImVtYWlsIjoiYWxpY2VAd29yay5jb20iLCJleHAiOjE3NDEyNDg2MjV9.Nt2zdIcU6jWBqXCOBc3oywVUbqXTZDpstpYY34_SuFk
 
+### Login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "password": "Password123"
+}
+
+### Users
 ### Get a user by id
 GET {{host}}/api/v1/users/1
 Authorization: Bearer {{token}}
@@ -34,11 +43,79 @@ Authorization: Bearer {{token}}
 DELETE {{host}}/api/v1/users/2
 Authorization: Bearer {{token}}
 
-### Login
-POST {{host}}/api/v1/auth/login
+
+### Categories
+
+### Get all categories
+GET {{host}}/api/v1/categories
+Authorization: Bearer {{token}}
+
+### Get a category by id
+GET {{host}}/api/v1/categories/1
+Authorization: Bearer {{token}}
+
+### Create a new category
+POST {{host}}/api/v1/categories
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
-  "username": "alice1",
-  "password": "Password123"
+  "name": "Category 1",
+  "description": "Category 1 description"
 }
+
+### Update a category
+PUT {{host}}/api/v1/categories/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Category 1",
+  "description": "Category 1 description updated"
+}
+
+### Delete a category
+DELETE {{host}}/api/v1/categories/1
+Authorization: Bearer {{token}}
+
+### Products
+
+### Get all products
+GET {{host}}/api/v1/products
+Authorization: Bearer {{token}}
+
+### Get all products by category
+GET {{host}}/api/v1/products?category_id=3
+Authorization: Bearer {{token}}
+
+### Get a product by id
+GET {{host}}/api/v1/products/1
+Authorization: Bearer {{token}}
+
+### Create a new product
+POST {{host}}/api/v1/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Product 1",
+  "description": "Product 1 description",
+  "price": 100.00,
+  "category_id": 3
+}
+
+### Update a product
+PUT {{host}}/api/v1/products/4
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Product 1",
+  "description": "Product 1 description updated",
+  "price": 101.00,
+  "category_id": 3
+}
+
+### Delete a product
+DELETE {{host}}/api/v1/products/1
+Authorization: Bearer {{token}}

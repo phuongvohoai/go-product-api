@@ -17,6 +17,8 @@ func RegisterRoutes(router *gin.Engine) *gin.Engine {
 		{
 			authorized.Use(middleware.AuthenticateMiddleware())
 			MapUserRoutes(authorized)
+			MapCategoryRoutes(authorized)
+			MapProductRoutes(authorized)
 		}
 
 		// Public routes without authentication

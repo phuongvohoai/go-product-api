@@ -20,7 +20,7 @@ func Connect() {
 		log.Fatalln("Cannot connect to SQLServer:", err)
 	}
 
-	err = db.AutoMigrate(&models.User{})
+	err = db.AutoMigrate(&models.User{}, &models.Category{}, &models.Product{})
 	if err != nil {
 		log.Fatalln("Cannot migrate table:", err)
 	}

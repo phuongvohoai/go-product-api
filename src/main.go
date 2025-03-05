@@ -19,6 +19,7 @@ func main() {
 	r := gin.Default()
 
 	r.Use(middleware.PerformanceLogMiddleware())
+	r.Use(middleware.ResponseCacheMiddleware())
 
 	routes.RegisterRoutes(r)
 
