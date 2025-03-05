@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"phuong/go-product-api/models"
 
 	"gorm.io/gorm"
@@ -78,7 +79,7 @@ func (s *UserService) VerifyUser(ctx context.Context, username, password string)
 	}
 
 	if !PasswordVerify(password, user.PasswordHash) {
-		return models.User{}, nil
+		return models.User{}, errors.New("invalid password")
 	}
 
 	return user, nil

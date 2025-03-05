@@ -18,6 +18,7 @@ func main() {
 
 	r := gin.Default()
 
+	r.Use(middleware.ErrorHandlingMiddleware())
 	r.Use(middleware.PerformanceLogMiddleware())
 	r.Use(middleware.ResponseCacheMiddleware())
 

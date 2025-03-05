@@ -41,13 +41,13 @@ func (ctr *AuthController) Login(c *gin.Context) {
 	var loginRequest LoginRequest
 
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
-		c.JSON(400, models.Response.BadRequest(err))
+		c.Error(err)
 		return
 	}
 
 	user, err := ctr.userService.VerifyUser(c, loginRequest.Username, loginRequest.Password)
 	if err != nil {
-		c.JSON(404, models.Response.NotFound(err))
+		c.Error(err)
 		return
 	}
 
