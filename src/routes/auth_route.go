@@ -10,7 +10,8 @@ import (
 
 func MapAuthRoutes(router *gin.RouterGroup) {
 	userService := services.NewUserService(database.DB)
-	authController := controllers.NewAuthController(*userService)
+	emailService := services.NewLocalMailService()
+	authController := controllers.NewAuthController(*userService, emailService)
 
 	router.POST("/auth/login", authController.Login)
 }
