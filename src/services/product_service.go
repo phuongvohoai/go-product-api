@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"phuong/go-product-api/database"
 	"phuong/go-product-api/models"
 
 	"gorm.io/gorm"
@@ -26,16 +27,26 @@ func (s *ProductService) GetProduct(ctx context.Context, id int) (models.Product
 	return product, err
 }
 
-func (s *ProductService) GetProducts(ctx context.Context) ([]models.Product, error) {
+func (s *ProductService) GetProducts(ctx context.Context, pagination *models.Pagination) ([]models.Product, int, error) {
 	var products []models.Product
-	err := s.db.WithContext(ctx).Preload("Category").Find(&products).Error
-	return products, err
+
+	query := s.db.WithContext(ctx).Model(&models.Product{}).Preload("Category")
+
+	total, err := database.GetPaginatedList(query, pagination, &products)
+
+	return products, total, err
 }
 
-func (s *ProductService) GetProductsByCategory(ctx context.Context, categoryID int) ([]models.Product, error) {
+func (s *ProductService) GetProductsByCategory(ctx context.Context, categoryID int, pagination *models.Pagination) ([]models.Product, int, error) {
 	var products []models.Product
-	err := s.db.WithContext(ctx).Preload("Category").Where("category_id = ?", categoryID).Find(&products).Error
-	return products, err
+
+	query := s.db.WithContext(ctx).Model(&models.Product{}).
+		Where("category_id = ?", categoryID).
+		Preload("Category")
+
+	total, err := database.GetPaginatedList(query, pagination, &products)
+
+	return products, total, err
 }
 
 func (s *ProductService) UpdateProduct(ctx context.Context, product *models.Product) (models.Product, error) {

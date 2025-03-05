@@ -16,7 +16,7 @@ GET {{host}}/api/v1/users/1
 Authorization: Bearer {{token}}
 
 ### Get all users
-GET {{host}}/api/v1/users
+GET {{host}}/api/v1/users?page=1&page_size=1
 Authorization: Bearer {{token}}
 
 ### Create a new user

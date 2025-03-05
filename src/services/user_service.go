@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"phuong/go-product-api/database"
 	"phuong/go-product-api/models"
 
 	"gorm.io/gorm"
@@ -33,10 +34,14 @@ func (s *UserService) GetUser(ctx context.Context, id int) (models.User, error) 
 	return user, err
 }
 
-func (s *UserService) GetUsers(ctx context.Context) ([]models.User, error) {
+func (s *UserService) GetUsers(ctx context.Context, pagination *models.Pagination) ([]models.User, int, error) {
 	var users []models.User
-	err := s.db.WithContext(ctx).Find(&users).Error
-	return users, err
+
+	query := s.db.WithContext(ctx).Model(&models.User{})
+
+	total, err := database.GetPaginatedList(query, pagination, &users)
+
+	return users, total, err
 }
 
 func (s *UserService) UpdateUser(ctx context.Context, user *models.User, newPassword string) (models.User, error) {

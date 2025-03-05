@@ -3,6 +3,7 @@ package controllers
 import (
 	"phuong/go-product-api/models"
 	"phuong/go-product-api/services"
+	"phuong/go-product-api/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -98,28 +99,40 @@ func (ctr *ProductController) GetProductById(c *gin.Context) {
 // GetProducts godoc
 //
 //	@Summary		List all products
-//	@Description	Get a list of all products
+//	@Description	Get a list of products with pagination and sorting
 //	@Tags			products
 //	@Produce		json
-//	@Success		200	{object}	models.ApiResponse{data=[]ProductResponse}
-//	@Failure		400	{object}	models.ApiResponse
+//	@Param			category_id	query		int		false	"Filter by category ID"
+//	@Param			page		query		int		false	"Page number (default: 1)"
+//	@Param			page_size	query		int		false	"Page size (default: 10)"
+//	@Param			sort_by		query		string	false	"Sort by field (name, price)"
+//	@Param			sort_dir	query		string	false	"Sort direction (asc, desc)"
+//	@Success		200			{object}	models.ApiResponse{data=models.PaginatedListResponse}
+//	@Failure		400			{object}	models.ApiResponse
 //	@Router			/api/v1/products [get]
 func (ctr *ProductController) GetProducts(c *gin.Context) {
-	// Check for optional category_id query parameter
+	paginationOptions := utils.CreateDefaultPaginationOptions()
+	paginationOptions.ValidSortFields = map[string]bool{
+		"id": true, "name": true, "price": true, "created_at": true,
+	}
+
+	pagination := utils.ParsePaginationQuery(c, paginationOptions)
+
 	categoryIDStr := c.Query("category_id")
 
 	var products []models.Product
+	var total int
 	var err error
 
 	if categoryIDStr != "" {
-		categoryID, err := strconv.Atoi(categoryIDStr)
-		if err != nil {
-			c.JSON(400, models.Response.BadRequest(err))
+		categoryID, parseErr := strconv.Atoi(categoryIDStr)
+		if parseErr != nil {
+			c.JSON(400, models.Response.BadRequest(parseErr))
 			return
 		}
-		products, err = ctr.productService.GetProductsByCategory(c, categoryID)
+		products, total, err = ctr.productService.GetProductsByCategory(c, categoryID, pagination)
 	} else {
-		products, err = ctr.productService.GetProducts(c)
+		products, total, err = ctr.productService.GetProducts(c, pagination)
 	}
 
 	if err != nil {
@@ -132,7 +145,14 @@ func (ctr *ProductController) GetProducts(c *gin.Context) {
 		productsResponse = append(productsResponse, toProductResponse(&product))
 	}
 
-	c.JSON(200, models.Response.Success(productsResponse))
+	response := models.NewPaginatedListResponse(
+		productsResponse,
+		pagination.Page,
+		pagination.PageSize,
+		total,
+	)
+
+	c.JSON(200, models.Response.Success(response))
 }
 
 // UpdateProduct godoc

@@ -27,3 +27,22 @@ func Connect() {
 
 	DB = db
 }
+
+func GetPaginatedList(query *gorm.DB, pagination *models.Pagination, dest interface{}) (int, error) {
+	var total int64
+
+	countQuery := query.Session(&gorm.Session{})
+	if err := countQuery.Count(&total).Error; err != nil {
+		return 0, err
+	}
+
+	if err := query.
+		Order(pagination.SortBy + " " + pagination.SortDir).
+		Limit(pagination.PageSize).
+		Offset((pagination.Page - 1) * pagination.PageSize).
+		Find(dest).Error; err != nil {
+		return 0, err
+	}
+
+	return int(total), nil
+}

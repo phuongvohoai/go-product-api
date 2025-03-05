@@ -306,7 +306,7 @@ const docTemplate = `{
         },
         "/api/v1/products": {
             "get": {
-                "description": "Get a list of all products",
+                "description": "Get a list of products with pagination and sorting",
                 "produces": [
                     "application/json"
                 ],
@@ -314,6 +314,38 @@ const docTemplate = `{
                     "products"
                 ],
                 "summary": "List all products",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by category ID",
+                        "name": "category_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (default: 10)",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by field (name, price)",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort direction (asc, desc)",
+                        "name": "sort_dir",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -326,10 +358,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/controllers.ProductResponse"
-                                            }
+                                            "$ref": "#/definitions/models.PaginatedListResponse"
                                         }
                                     }
                                 }
@@ -552,7 +581,7 @@ const docTemplate = `{
         },
         "/api/v1/users": {
             "get": {
-                "description": "Get a list of all users",
+                "description": "Get a paginated list of all users",
                 "produces": [
                     "application/json"
                 ],
@@ -560,6 +589,32 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "List all users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (default: 10)",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by field (username, email)",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort direction (asc, desc)",
+                        "name": "sort_dir",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -572,10 +627,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/controllers.UserResponse"
-                                            }
+                                            "$ref": "#/definitions/models.PaginatedListResponse"
                                         }
                                     }
                                 }
@@ -940,6 +992,29 @@ const docTemplate = `{
                 },
                 "isSuccess": {
                     "type": "boolean"
+                }
+            }
+        },
+        "models.PaginatedListResponse": {
+            "type": "object",
+            "properties": {
+                "items": {},
+                "pagination": {
+                    "$ref": "#/definitions/models.PaginationResponse"
+                }
+            }
+        },
+        "models.PaginationResponse": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         }

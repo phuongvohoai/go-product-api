@@ -3,6 +3,7 @@ package controllers
 import (
 	"phuong/go-product-api/models"
 	"phuong/go-product-api/services"
+	"phuong/go-product-api/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -73,7 +74,6 @@ func (ctr *UserController) CreateUser(c *gin.Context) {
 func (ctr *UserController) GetUser(c *gin.Context) {
 	id := c.Param("id")
 
-	// Convert string to int
 	userId, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(400, models.Response.BadRequest(err))
@@ -92,14 +92,25 @@ func (ctr *UserController) GetUser(c *gin.Context) {
 // GetUsers godoc
 //
 //	@Summary		List all users
-//	@Description	Get a list of all users
+//	@Description	Get a paginated list of all users
 //	@Tags			users
 //	@Produce		json
-//	@Success		200	{object}	models.ApiResponse{data=[]UserResponse}
-//	@Failure		400	{object}	models.ApiResponse
+//	@Param			page		query		int		false	"Page number (default: 1)"
+//	@Param			page_size	query		int		false	"Page size (default: 10)"
+//	@Param			sort_by		query		string	false	"Sort by field (username, email)"
+//	@Param			sort_dir	query		string	false	"Sort direction (asc, desc)"
+//	@Success		200			{object}	models.ApiResponse{data=models.PaginatedListResponse}
+//	@Failure		400			{object}	models.ApiResponse
 //	@Router			/api/v1/users [get]
 func (ctr *UserController) GetUsers(c *gin.Context) {
-	users, err := ctr.userService.GetUsers(c)
+	paginationOptions := utils.CreateDefaultPaginationOptions()
+	paginationOptions.ValidSortFields = map[string]bool{
+		"id": true, "username": true, "email": true, "created_at": true,
+	}
+
+	pagination := utils.ParsePaginationQuery(c, paginationOptions)
+
+	users, total, err := ctr.userService.GetUsers(c, pagination)
 	if err != nil {
 		c.JSON(400, models.Response.BadRequest(err))
 		return
@@ -110,7 +121,14 @@ func (ctr *UserController) GetUsers(c *gin.Context) {
 		usersResponse = append(usersResponse, toResponse(&user))
 	}
 
-	c.JSON(200, models.Response.Success(usersResponse))
+	response := models.NewPaginatedListResponse(
+		usersResponse,
+		pagination.Page,
+		pagination.PageSize,
+		total,
+	)
+
+	c.JSON(200, models.Response.Success(response))
 }
 
 // UpdateUser godoc
@@ -128,7 +146,6 @@ func (ctr *UserController) GetUsers(c *gin.Context) {
 func (ctr *UserController) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 
-	// Convert string to int
 	userId, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(400, models.Response.BadRequest(err))
@@ -168,7 +185,6 @@ func (ctr *UserController) UpdateUser(c *gin.Context) {
 func (ctr *UserController) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 
-	// Convert string to int
 	userId, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(400, models.Response.BadRequest(err))

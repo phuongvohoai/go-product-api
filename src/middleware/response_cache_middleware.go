@@ -11,7 +11,7 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-var memoryCache = cache.New(1*time.Minute, 2*time.Minute)
+var memoryCache = cache.New(3*time.Second, 6*time.Second)
 
 type responseBodyWriter struct {
 	gin.ResponseWriter
