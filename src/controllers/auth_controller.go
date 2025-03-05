@@ -30,6 +30,7 @@ func NewAuthController(userService services.UserService) *AuthController {
 //
 //	@Summary		Login
 //	@Tags			auth
+//	@Produce		json
 //	@Param			body body LoginRequest true "Login request"
 //	@Router			/api/v1/auth/login [post]
 func (ctr *AuthController) Login(c *gin.Context) {

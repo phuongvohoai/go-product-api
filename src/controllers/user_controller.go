@@ -28,6 +28,17 @@ func NewUserController(userService services.UserService) *UserController {
 	return &UserController{userService}
 }
 
+// CreateUser godoc
+//
+//	@Summary		Create a new user
+//	@Description	Create a new user with the provided information
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		UserRequest	true	"User information"
+//	@Success		200		{object}	models.ApiResponse{data=UserResponse}
+//	@Failure		400		{object}	models.ApiResponse
+//	@Router			/api/v1/users [post]
 func (ctr *UserController) CreateUser(c *gin.Context) {
 	var newUser UserRequest
 
@@ -48,6 +59,17 @@ func (ctr *UserController) CreateUser(c *gin.Context) {
 	c.JSON(200, models.Response.Success(toResponse(&user)))
 }
 
+// GetUser godoc
+//
+//	@Summary		Get a user by ID
+//	@Description	Get user details by user ID
+//	@Tags			users
+//	@Produce		json
+//	@Param			id	path		int	true	"User ID"
+//	@Success		200	{object}	models.ApiResponse{data=UserResponse}
+//	@Failure		400	{object}	models.ApiResponse
+//	@Failure		404	{object}	models.ApiResponse
+//	@Router			/api/v1/users/{id} [get]
 func (ctr *UserController) GetUser(c *gin.Context) {
 	id := c.Param("id")
 
@@ -67,6 +89,15 @@ func (ctr *UserController) GetUser(c *gin.Context) {
 	c.JSON(200, models.Response.Success(toResponse(&user)))
 }
 
+// GetUsers godoc
+//
+//	@Summary		List all users
+//	@Description	Get a list of all users
+//	@Tags			users
+//	@Produce		json
+//	@Success		200	{object}	models.ApiResponse{data=[]UserResponse}
+//	@Failure		400	{object}	models.ApiResponse
+//	@Router			/api/v1/users [get]
 func (ctr *UserController) GetUsers(c *gin.Context) {
 	users, err := ctr.userService.GetUsers(c)
 	if err != nil {
@@ -82,6 +113,18 @@ func (ctr *UserController) GetUsers(c *gin.Context) {
 	c.JSON(200, models.Response.Success(usersResponse))
 }
 
+// UpdateUser godoc
+//
+//	@Summary		Update a user
+//	@Description	Update user information by user ID
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int			true	"User ID"
+//	@Param			user	body		UserRequest	true	"Updated user information"
+//	@Success		200		{object}	models.ApiResponse{data=UserResponse}
+//	@Failure		400	{object}	models.ApiResponse
+//	@Router			/api/v1/users/{id} [put]
 func (ctr *UserController) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 
@@ -112,6 +155,16 @@ func (ctr *UserController) UpdateUser(c *gin.Context) {
 	c.JSON(200, models.Response.Success(toResponse(&updatedUser)))
 }
 
+// DeleteUser godoc
+//
+//	@Summary		Delete a user
+//	@Description	Delete a user by ID
+//	@Tags			users
+//	@Produce		json
+//	@Param			id	path		int	true	"User ID"
+//	@Success		200	{object}	models.ApiResponse{data=bool}
+//	@Failure		400	{object}	models.ApiResponse
+//	@Router			/api/v1/users/{id} [delete]
 func (ctr *UserController) DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 
