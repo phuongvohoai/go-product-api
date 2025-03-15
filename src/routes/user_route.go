@@ -16,7 +16,6 @@ func MapUserRoutes(router *gin.RouterGroup) {
 	{
 		userRoute.GET("", userController.GetUsers)
 		userRoute.GET("/:id", userController.GetUser)
-		userRoute.POST("", userController.CreateUser)
 		userRoute.PUT("/:id", userController.UpdateUser)
 		userRoute.DELETE("/:id", userController.DeleteUser)
 	}

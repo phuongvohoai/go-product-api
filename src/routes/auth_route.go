@@ -12,6 +12,8 @@ func MapAuthRoutes(router *gin.RouterGroup) {
 	userService := services.NewUserService(database.DB)
 	emailService := services.NewLocalMailService()
 	authController := controllers.NewAuthController(*userService, emailService)
+	userController := controllers.NewUserController(*userService)
 
 	router.POST("/auth/login", authController.Login)
+	router.POST("/auth/register", userController.CreateUser)
 }
