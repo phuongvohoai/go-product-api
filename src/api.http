@@ -1,5 +1,5 @@
 @host = http://localhost:8080
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFsaWNlIiwiZW1haWwiOiIiLCJleHAiOjE3NDIxMTY1NjF9.6Xp5uzEkXDf8U5UJc_9cNx54EQIo06opvCZmo_8DVi8
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhbGljZSIsImVtYWlsIjoiYWxpY2VAd29yay5jb20iLCJleHAiOjE3NDI0MDAxMjUsImp0aSI6IjAxOTVhOWZkLTllYmEtNzdkYi05NGQyLWQ0MTM5NGNhNDUxYSJ9.PgSwRm0W3B5nrKvoBOxuFFX1oYGa9L8mp5tgcMubl1o
 
 ### Login
 POST {{host}}/api/v1/auth/login
@@ -9,6 +9,11 @@ Content-Type: application/json
   "username": "alice",
   "password": "Password123"
 }
+
+### Logout
+POST {{host}}/api/v1/auth/logout
+Authorization: Bearer {{token}}
+
 
 ### Users
 ### Get a user by id

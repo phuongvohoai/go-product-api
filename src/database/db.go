@@ -13,7 +13,7 @@ import (
 
 var DB *gorm.DB
 
-func Connect() {
+func ConnectMySql() {
 	dsn := os.Getenv("DATABASE_URL")
 	maxRetries := 5
 

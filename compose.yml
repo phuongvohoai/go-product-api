@@ -12,6 +12,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      cache:
+        condition: service_healthy
     networks:
       - go-network
 
@@ -23,6 +25,8 @@ services:
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=Password1!
       - MYSQL_DATABASE=ProductApi
+    ports:
+      - '33066:3306'
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -32,6 +36,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+  
+  cache:
+    image: redis
+    restart: always
+    ports:
+      - '63799:6379'
+    networks:
+      - go-network
 
 volumes:
   dbdata:

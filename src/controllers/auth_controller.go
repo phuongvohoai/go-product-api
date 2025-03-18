@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"log"
 	"phuong/go-product-api/models"
 	"phuong/go-product-api/services"
@@ -35,19 +36,19 @@ func NewAuthController(userService services.UserService, emailService services.E
 //	@Summary		Login
 //	@Tags			auth
 //	@Produce		json
-//	@Param			body body LoginRequest true "Login request"
+//	@Param			body LoginRequest true "Login request"
 //	@Router			/api/v1/auth/login [post]
 func (ctr *AuthController) Login(c *gin.Context) {
 	var loginRequest LoginRequest
 
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	user, err := ctr.userService.VerifyUser(c, loginRequest.Username, loginRequest.Password)
 	if err != nil {
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
@@ -56,7 +57,7 @@ func (ctr *AuthController) Login(c *gin.Context) {
 	wg.Add(2)
 
 	// Generate token and send email notification concurrently
-	go ctr.generateToken(user.Username, user.Email, &wg, tokenCh)
+	go ctr.generateToken(user.ID, user.Username, user.Email, &wg, tokenCh)
 	go ctr.sendEmail(user.Email, "New login", "Your account has been logged in from a new device", &wg)
 
 	wg.Wait()
@@ -71,6 +72,35 @@ func (ctr *AuthController) Login(c *gin.Context) {
 	}))
 }
 
+// Logout godoc
+// @Summary			Logout
+// @Tag				Auth
+// @Produce			json
+//
+//	@Router			/api/v1/auth/logout [post]
+func (ctr *AuthController) Logout(c *gin.Context) {
+	claims, exists := c.Get("Claims")
+	if !exists {
+		c.JSON(400, models.Response.BadRequest(errors.New("MISSING CLAIMS")))
+		return
+	}
+
+	// Type assertion to cast claims to service.Claims
+	typedClaims, ok := claims.(services.Claims)
+	if !ok {
+		c.JSON(400, models.Response.BadRequest(errors.New("INVALID CLAIMS")))
+		return
+	}
+
+	err := services.RevokeToken(typedClaims.StandardClaims.Id)
+	if err != nil {
+		c.JSON(400, models.Response.BadRequest(errors.New("TOKEN REVOKE FAILED")))
+		return
+	}
+
+	c.JSON(200, models.Response.Success("Successfully logged out"))
+}
+
 func (ctr *AuthController) sendEmail(email string, subject string, body string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	err := ctr.emailService.SendEmail(email, subject, body)
@@ -79,9 +109,9 @@ func (ctr *AuthController) sendEmail(email string, subject string, body string, 
 	}
 }
 
-func (ctr *AuthController) generateToken(username string, email string, wg *sync.WaitGroup, tokenCh chan<- string) {
+func (ctr *AuthController) generateToken(id uint, username string, email string, wg *sync.WaitGroup, tokenCh chan<- string) {
 	defer wg.Done()
-	token, err := services.GenerateToken(username, email)
+	token, err := services.GenerateToken(id, username, email)
 	if err != nil {
 		log.Println("Error generating token: ", err)
 	}

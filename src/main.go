@@ -14,7 +14,8 @@ import (
 // @description	API for managing products
 func main() {
 	godotenv.Load()
-	database.Connect()
+	database.ConnectMySql()
+	database.ConnectRedis()
 
 	r := gin.Default()
 
